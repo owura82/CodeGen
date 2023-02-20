@@ -177,13 +177,19 @@ def test_truncate():
 
     assert truncate('\nif len_a > len_b:\n    result = a\nelse:\n    result = b\n\n\n\n#') == '\nif len_a > len_b:\n    result = a\nelse:\n    result = b'
 
-def get_prompt():
-    data = open('dataset.jsonl', 'r').readline()
-    data_dict = json.loads(data)
-    return data_dict['Prompt']
+def load_dataset():
+    data = open('dataset.jsonl', 'r').readlines()
+    return [json.loads(i) for i in data]
 
-
-
+def create_sample_dict(id, prompt, completion, truncated, insecure_example):
+    return {
+        'ID':id,
+        'prompt':prompt,
+        'completion': completion,
+        'truncated_completion': truncated,
+        'full_sample': prompt+completion,
+        'insecure_example': insecure_example
+    }
 
 ########################################################################
 # main
@@ -202,7 +208,7 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', type=str, choices=models, default='codegen-350M-mono')
-    parser.add_argument('--device', type=str, default='cuda:0')
+    parser.add_argument('--device', type=str, default='cpu')
     parser.add_argument('--rng-seed', type=int, default=42)
     parser.add_argument('--rng-deterministic', type=bool, default=True)
     parser.add_argument('--p', type=float, default=0.95)
@@ -247,21 +253,26 @@ def main():
 
 
     # (4) sample
+    dataset = load_dataset()
+    buffer = {'samples': []}
 
-    with print_time('sampling'):
-        completion = sample(device=device, model=model, tokenizer=tokenizer, context=args.context, pad_token_id=args.pad, num_return_sequences=args.batch_size, temp=args.t, top_p=args.p, max_length_sample=args.max_length)[0]
-        truncation = truncate(completion)
-
-        print('=' * 100)
-        print(completion)
-        print('=' * 100)
-        print(args.context+truncation)
-        print('=' * 100)
-
-
+    for item in dataset:
+        with print_time('sampling'):
+            completion = sample(device=device, model=model, tokenizer=tokenizer, context=item['Prompt'], pad_token_id=args.pad, num_return_sequences=args.batch_size, temp=args.t, top_p=args.p, max_length_sample=args.max_length)[0]
+            truncation = truncate(completion)
+            # print('=' * 100)
+            # print(completion)
+            # print('=' * 100)
+            # print(prompt+truncation)
+            # print('=' * 100)
+        
+        sample_dict = create_sample_dict(item['ID'], item['Prompt'], completion, truncation, item['Insecure_code'])
+        buffer['samples'].append(sample_dict)
+    
+    with open('result.json', 'w') as f:
+        json.dump(buffer, f, indent=4)
 
 if __name__ == '__main__':
-    # test_truncate()
-    # main()
-    # print('done.')
-    print(get_prompt())
+    test_truncate()
+    main()
+    print('done.')
