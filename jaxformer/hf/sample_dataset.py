@@ -208,7 +208,7 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', type=str, choices=models, default='codegen-350M-mono')
-    parser.add_argument('--device', type=str, default='cpu')
+    parser.add_argument('--device', type=str, default='cuda:0')
     parser.add_argument('--rng-seed', type=int, default=42)
     parser.add_argument('--rng-deterministic', type=bool, default=True)
     parser.add_argument('--p', type=float, default=0.95)
