@@ -257,7 +257,8 @@ def main():
     dataset = load_dataset()
     buffer = {'samples': []}
 
-    for item in dataset:
+    for num,item in enumerate(dataset):
+        print("\SAMPLING SAMPLE ", num)
         with print_time('sampling'):
             completion = sample(device=device, model=model, tokenizer=tokenizer, context=item['Prompt'], pad_token_id=args.pad, num_return_sequences=args.batch_size, temp=args.t, top_p=args.p, max_length_sample=args.max_length)[0]
             truncation = truncate(completion)
