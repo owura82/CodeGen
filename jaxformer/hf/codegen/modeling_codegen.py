@@ -32,7 +32,8 @@ from transformers.utils import logging
 from transformers.utils.model_parallel_utils import assert_device_map, get_device_map
 # from .configuration_codegen import CodeGenConfig
 
-sys.path.insert(1, '/Users/owura/documents/repos/CodeGen/jaxformer/hf/codegen')
+# sys.path.insert(1, '/Users/owura/documents/repos/CodeGen/jaxformer/hf/codegen')
+sys.path.insert(1, '/home/oasare/repos/CodeGen/jaxformer/hf/codegen')
 import configuration_codegen
 
 

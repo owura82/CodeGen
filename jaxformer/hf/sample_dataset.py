@@ -10,7 +10,8 @@ import random
 import argparse
 import json
 import sys
-sys.path.insert(1, '/Users/owura/documents/repos/CodeGen/jaxformer/hf/codegen')
+# sys.path.insert(1, '/Users/owura/documents/repos/CodeGen/jaxformer/hf/codegen')
+sys.path.insert(1, '/home/oasare/repos/CodeGen/jaxformer/hf/codegen')
 
 import torch
 
